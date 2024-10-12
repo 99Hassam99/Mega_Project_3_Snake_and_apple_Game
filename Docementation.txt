@@ -1,0 +1,14 @@
+Google:
+search pygame
+Search pygame locals
+pygame mixer sound
+
+
+
+to convert the file to .exe like a standalone application install
+pip install auto-py-to-exe
+
+then run this command in the command prompt
+auto-py-to-exe.exe
+
+Python\PyCharm Coding\hello\Codebasicslearning\output\Main>
