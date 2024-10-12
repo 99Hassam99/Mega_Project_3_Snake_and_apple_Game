@@ -10,5 +10,3 @@ pip install auto-py-to-exe
 
 then run this command in the command prompt
 auto-py-to-exe.exe
-
-Python\PyCharm Coding\hello\Codebasicslearning\output\Main>
