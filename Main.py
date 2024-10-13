@@ -8,7 +8,7 @@ BACKGROUND_COLOR = (0, 0,0)
 class Apple:
     def __init__(self,parent_screen):
         self.parent_screen = parent_screen
-        self.image = pygame.image.load('resources/apple.jpg').convert()
+        self.image = pygame.image.load(('resources/apple.jpg')).convert()
         self.x = SIZE*3
         self.y = SIZE*3
 
@@ -87,6 +87,20 @@ class Game:
         self.snake.draw() # initializing snake
         self.apple = Apple(self.surface)
         self.apple.draw() # initializing apple
+        self.speed = 0.3
+
+        self.highscore = self.load_highscore()
+
+    def load_highscore(self):
+        try:
+            with open("highscore.txt",'r') as f:
+                content = f.read().strip()
+                if content:
+                    return int(content)
+                else:
+                    return 0
+        except (FileNotFoundError,ValueError):
+            return 0
 
     def is_collision(self,x1,y1,x2,y2):
         if x1 >= x2 and x1 < x2 + SIZE:
@@ -118,6 +132,8 @@ class Game:
             self.play_sound("ding")
             self.snake.increase_length()
             self.apple.move()
+            if self.speed > 0.05:
+                self.speed -= 0.02
 
         # snake colliding with itself logic
         for i in range(3,self.snake.length):
@@ -134,22 +150,39 @@ class Game:
         font = pygame.font.SysFont('aria',30)
         score = font.render(f'score:{self.snake.length}',True,(250,250,250))
         self.surface.blit(score,(510,10)) # placing something at the surface
+        highscore = font.render(f'Highscore: {self.highscore}',True,(250,250,250))
+        self.surface.blit(highscore,(510,50))
 
 
     def show_game_over(self):
         self.render_background()
         font = pygame.font.SysFont('aria',30)
+
+        if self.snake.length > self.highscore:
+            self.highscore = self.snake.length
+            self.save_highscore()
+            highscore_text = f'New Highscore: {self.highscore}'
+        else:
+            highscore_text = f'Highscore: {self.highscore}'
+
         line1 = font.render(f'score:{self.snake.length}',True,(250,250,250))
-        self.surface.blit(line1,(200,300))
-        line2 = font.render("To play the game again press ENTER. To exit press ESCAPE.",True,(250,250,250))
-        self.surface.blit(line2,(200,350))
+        self.surface.blit(line1,(200,250))
+        line2 =font.render(highscore_text,True,(250,250,250))
+        self.surface.blit(line2, (200,300))
+        line3 = font.render("To play the game again press ENTER. To exit press ESCAPE.",True,(250,250,250))
+        self.surface.blit(line3,(200,350))
         pygame.display.flip()
 
         pygame.mixer.music.pause()
 
+    def save_highscore(self):
+        with open("highscore.txt","w") as f:
+            f.write(str(self.highscore))
+
     def reset(self):
         self.snake = Snake(self.surface, 1)
         self.apple = Apple(self.surface)
+        self.speed = 0.3
 
     def run(self):
         running = True
@@ -189,7 +222,7 @@ class Game:
                 self.show_game_over()
                 pause = True
                 self.reset()
-            time.sleep(0.1)
+            time.sleep(self.speed)
 
 if __name__ == "__main__":
     game = Game()
